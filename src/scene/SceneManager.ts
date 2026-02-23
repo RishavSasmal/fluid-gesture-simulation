@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { ParticleSystem } from "../particles/ParticleSystem";
 
 export class SceneManager {
   private scene: THREE.Scene;
@@ -8,6 +9,7 @@ export class SceneManager {
   private cube: THREE.Mesh;
 //   private cube2: THREE.Mesh;
   private controls: OrbitControls;
+  private particleSystem: ParticleSystem;
 
   constructor() {
     // Scene
@@ -45,6 +47,7 @@ export class SceneManager {
 
     this.cube = new THREE.Mesh(geometry, material);
     // this.cube2 = new THREE.Mesh(geometry, material2);
+    this.particleSystem = new ParticleSystem(this.scene);
     this.scene.add(this.cube);
     // this.scene.add(this.cube2);
 
@@ -67,6 +70,7 @@ export class SceneManager {
 
     this.controls.update();
 
+    this.particleSystem.update();
     this.renderer.render(this.scene, this.camera);
   }
 
