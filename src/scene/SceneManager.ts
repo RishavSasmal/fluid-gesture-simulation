@@ -48,6 +48,7 @@ export class SceneManager {
     this.cube = new THREE.Mesh(geometry, material);
     // this.cube2 = new THREE.Mesh(geometry, material2);
     this.particleSystem = new ParticleSystem(this.scene);
+    this.cube.add(this.particleSystem.getPoints());
     this.scene.add(this.cube);
     // this.scene.add(this.cube2);
 
@@ -61,9 +62,9 @@ export class SceneManager {
   private animate(): void {
     requestAnimationFrame(this.animate.bind(this));
 
-    this.cube.rotation.x += 0.01;
-    this.cube.rotation.y += 0.01;
-    this.cube.rotation.z += 0.01;
+    this.cube.rotation.x += 0.001;
+    this.cube.rotation.y += 0.001;
+    this.cube.rotation.z += 0.001;
 
     // this.cube2.rotation.x -= 0.02;
     // this.cube2.rotation.y -= 0.02;
