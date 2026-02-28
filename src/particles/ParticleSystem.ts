@@ -134,13 +134,14 @@ private velocities: Float32Array;
 //     this.points.geometry.attributes.position.needsUpdate = true;
 //   }
 
-    public update(): void {
+    // public update(): void {
+    public update(mousePos: THREE.Vector3): void{
     const positions = this.points.geometry.attributes.position.array as Float32Array;
     const velocities = this.velocities;
 
     // const scale = 0.6;
     const speed = 0.004;
-    const damping = 0.8;
+    const damping = 0.995;
     const time = performance.now() * 0.0003;
 
     for (let i = 0; i < this.particleCount; i++) {
@@ -160,30 +161,63 @@ private velocities: Float32Array;
 
         const force = this.motionField.getForce(x, y, z, time);
 
-        // Add curl force to velocity
-        velocities[i3]     += force.x * speed;
-        velocities[i3 + 1] += force.y * speed;
-        velocities[i3 + 2] += force.z * speed;
+        // // Add curl force to velocity
+        // velocities[i3]     += force.x * speed;
+        // velocities[i3 + 1] += force.y * speed;
+        // velocities[i3 + 2] += force.z * speed;
 
-        // Add inward pressure force
-        velocities[i3]     -= x * 0.0005;
-        velocities[i3 + 1] -= y * 0.0005;
-        velocities[i3 + 2] -= z * 0.0005;
+        const dx = x - mousePos.x;
+        const dy = y - mousePos.y;
+        const dz = z - mousePos.z;
+
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+        // if (dist < 0.5) {
+        //   const strength = (0.5 - dist) * 0.01;
+
+        //   velocities[i3]     += dx * strength;
+        //   velocities[i3 + 1] += dy * strength;
+        //   velocities[i3 + 2] += dz * strength;
+        // }
+
+        // // Add inward pressure force
+        // velocities[i3]     -= x * 0.05;
+        // velocities[i3 + 1] -= y * 0.05;
+        // velocities[i3 + 2] -= z * 0.05;
 
         // Apply damping (fluid smoothness)
-        velocities[i3]     *= damping;
-        velocities[i3 + 1] *= damping;
-        velocities[i3 + 2] *= damping;
+        // velocities[i3]     *= damping;
+        // velocities[i3 + 1] *= damping;
+        // velocities[i3 + 2] *= damping;
 
-        // Update position
-        positions[i3]     += velocities[i3];
-        positions[i3 + 1] += velocities[i3 + 1];
-        positions[i3 + 2] += velocities[i3 + 2];
+        // // Update position
+        // positions[i3]     += velocities[i3];
+        // positions[i3 + 1] += velocities[i3 + 1];
+        // positions[i3 + 2] += velocities[i3 + 2];
 
 
         // positions[i3] += force.x * speed;
         // positions[i3 + 1] += force.y * speed;
         // positions[i3 + 2] += force.z * speed;
+
+        const speed = 0.003;
+const damping = 0.995;
+
+velocities[i3] += force.x * speed;
+velocities[i3 + 1] += force.y * speed;
+velocities[i3 + 2] += force.z * speed;
+
+// mouse
+velocities[i3] += (mousePos.x - x) * 0.01;
+velocities[i3 + 1] += (mousePos.y - y) * 0.01;
+
+velocities[i3] *= damping;
+velocities[i3 + 1] *= damping;
+velocities[i3 + 2] *= damping;
+
+positions[i3] += velocities[i3];
+positions[i3 + 1] += velocities[i3 + 1];
+positions[i3 + 2] += velocities[i3 + 2];
 
         // Optional: soft boundary reset
         if (

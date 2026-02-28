@@ -10,6 +10,8 @@ export class SceneManager {
 //   private cube2: THREE.Mesh;
   private controls: OrbitControls;
   private particleSystem: ParticleSystem;
+  private mouse = new THREE.Vector2();
+  private raycaster = new THREE.Raycaster();
 
   constructor() {
     // Scene
@@ -52,7 +54,30 @@ export class SceneManager {
     this.scene.add(this.cube);
     // this.scene.add(this.cube2);
 
+    window.addEventListener("mousemove", (event) => {
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    });
+
     window.addEventListener("resize", this.onWindowResize.bind(this));
+  }
+
+  // private getMouseWorldPosition(): THREE.Vector3 {
+  //   const vector = new THREE.Vector3(this.mouse.x, this.mouse.y, 0.5);
+  //   vector.unproject(this.camera);
+  //   return vector;
+  // }
+
+  private getMouseWorldPosition(): THREE.Vector3 | null {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const intersects = this.raycaster.intersectObject(this.cube);
+
+    if (intersects.length > 0) {
+      return intersects[0].point.clone();
+    }
+
+    return null;
   }
 
   public start(): void {
@@ -71,7 +96,27 @@ export class SceneManager {
 
     this.controls.update();
 
-    this.particleSystem.update();
+    // this.particleSystem.update();
+    // const mousePos = this.getMouseWorldPosition();
+    // this.particleSystem.update(mousePos);
+    // const mouseWorld = this.getMouseWorldPosition();
+    // console.log(mouseWorld);
+
+    // if (mouseWorld) {
+    //   const mouseLocal = mouseWorld.clone();
+    //   this.cube.worldToLocal(mouseLocal);
+    //   this.particleSystem.update(mouseLocal);
+    // } else {
+    //   this.particleSystem.update(new THREE.Vector3(100,100,100)); // dummy far away
+    // }
+
+    const mouseLocal = new THREE.Vector3(
+      this.mouse.x,
+      this.mouse.y,
+      0
+    );
+
+    this.particleSystem.update(mouseLocal);
     this.renderer.render(this.scene, this.camera);
   }
 
